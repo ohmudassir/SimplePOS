@@ -1,1 +1,21 @@
-{}
+{
+  "Honda": {
+    "Clutch Plate": {
+      "quantity": 15,
+      "latestPurchasePrice": 500,
+      "retailMargin": 0.2
+    },
+    "Oil Filter": {
+      "quantity": 25,
+      "latestPurchasePrice": 150,
+      "retailMargin": 0.15
+    }
+  },
+  "Crown": {
+    "Chain Set": {
+      "quantity": 10,
+      "latestPurchasePrice": 800,
+      "retailMargin": 0.25
+    }
+  }
+}

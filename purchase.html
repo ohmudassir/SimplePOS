@@ -4,12 +4,10 @@
   <meta charset="UTF-8" />
   <title>Purchase Entry</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <script type="module" src="https://cdn.jsdelivr.net/npm/@material/web/all.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <link rel="stylesheet" href="assets/material-theme.css" />
-
   <style>
     * {
       box-sizing: border-box;
@@ -20,6 +18,27 @@
       padding: 40px;
       font-family: 'Roboto', sans-serif;
       background: #f5f5f5;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background-color: #6200ee;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #3700b3;
     }
 
     .container {
@@ -43,26 +62,12 @@
       align-items: flex-end;
     }
 
-    .top-row input, .top-row select {
+    .top-row select {
       padding: 10px;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
       width: 100%;
-    }
-
-    .top-row button {
-      padding: 12px 18px;
-      background: #6200ee;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .top-row button:hover {
-      background: #3700b3;
     }
 
     table {
@@ -122,6 +127,12 @@
   </style>
 </head>
 <body>
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.location.href='index.html'">
+      ← Back to Dashboard
+    </button>
+  </div>
+
   <div class="container">
     <h2>Bulk Purchase Entry</h2>
 
@@ -130,20 +141,13 @@
         <label>Select Company</label>
         <select id="companySelect"></select>
       </div>
-      <div style="flex: 1;">
-        <label>Add New Company</label>
-        <input type="text" id="newCompanyInput" placeholder="e.g., Yamaha" />
-      </div>
-      <div>
-        <button onclick="addCompany()">Add Company</button>
-      </div>
     </div>
 
     <table>
       <thead>
         <tr>
           <th>Predefined Item</th>
-          <th>Or New Item</th>
+          <th>New Item</th>
           <th>Quantity</th>
           <th>Purchase Price</th>
           <th>Retail Margin (%)</th>

@@ -1,22 +1,31 @@
 const fs = require('fs');
 const path = require('path');
 
+// File paths
 const companyPath = path.join(__dirname, '../data/companies.json');
 const stockPath = path.join(__dirname, '../data/stock.json');
 const purchasesPath = path.join(__dirname, '../data/purchases.json');
 
+// DOM elements
 const companySelect = document.getElementById('companySelect');
 const tableBody = document.getElementById('tableBody');
 
 let currentCompany = '';
 let predefinedItems = [];
 
+// Load initial data
 loadCompanies();
 addRow();
 
+// Load all companies
 function loadCompanies() {
-  if (fs.existsSync(companyPath)) {
-    const companies = JSON.parse(fs.readFileSync(companyPath));
+  try {
+    if (!fs.existsSync(companyPath)) {
+      fs.writeFileSync(companyPath, JSON.stringify([], null, 2));
+    }
+
+    const companies = JSON.parse(fs.readFileSync(companyPath, 'utf-8'));
+
     companySelect.innerHTML = '';
     companies.forEach(c => {
       const opt = document.createElement('option');
@@ -24,17 +33,25 @@ function loadCompanies() {
       opt.textContent = c;
       companySelect.appendChild(opt);
     });
-    currentCompany = companies[0];
-    companySelect.value = currentCompany;
-    loadPredefinedItems();
+
+    if (companies.length > 0) {
+      currentCompany = companies[0];
+      companySelect.value = currentCompany;
+      loadPredefinedItems();
+    }
+  } catch (err) {
+    console.error("❌ Error loading companies:", err);
+    alert("Failed to load companies.json.");
   }
 }
 
+// When company changes
 companySelect.addEventListener('change', () => {
   currentCompany = companySelect.value;
   loadPredefinedItems();
 });
 
+// Load stock items for selected company
 function loadPredefinedItems() {
   predefinedItems = [];
   if (fs.existsSync(stockPath)) {
@@ -49,6 +66,7 @@ function loadPredefinedItems() {
   });
 }
 
+// Update dropdown for predefined items
 function updateDropdownOptions(select) {
   select.innerHTML = `<option value="">-- Select --</option>`;
   predefinedItems.forEach(item => {
@@ -59,51 +77,31 @@ function updateDropdownOptions(select) {
   });
 }
 
+// Add row to table
 function addRow() {
   const row = document.createElement('tr');
+  const today = new Date().toISOString().split("T")[0];
+
   row.innerHTML = `
     <td><select class="item-select"></select></td>
     <td><input type="text" class="item-name" placeholder="New item name" /></td>
     <td><input type="number" class="qty" min="1" /></td>
     <td><input type="number" class="price" min="1" /></td>
     <td><input type="number" class="margin" value="10" /></td>
-    <td><input type="date" class="date" /></td>
+    <td><input type="date" class="date" value="${today}" /></td>
     <td><button onclick="removeRow(this)">❌</button></td>
   `;
+
   tableBody.appendChild(row);
-
-  const select = row.querySelector('.item-select');
-  updateDropdownOptions(select);
+  updateDropdownOptions(row.querySelector('.item-select'));
 }
 
+// Remove row
 function removeRow(btn) {
-  btn.parentElement.parentElement.remove();
+  btn.closest('tr').remove();
 }
 
-function addCompany() {
-  const newCompany = document.getElementById('newCompanyInput').value.trim();
-  if (!newCompany) return alert("Company name required");
-
-  let companies = [];
-  if (fs.existsSync(companyPath)) {
-    companies = JSON.parse(fs.readFileSync(companyPath));
-  }
-
-  if (!companies.includes(newCompany)) {
-    companies.push(newCompany);
-    fs.writeFileSync(companyPath, JSON.stringify(companies, null, 2));
-    loadCompanies();
-    companySelect.value = newCompany;
-    currentCompany = newCompany;
-    loadPredefinedItems();
-    alert("Company added ✅");
-  } else {
-    alert("Company already exists!");
-  }
-
-  document.getElementById('newCompanyInput').value = '';
-}
-
+// Save all purchase entries
 function saveAll() {
   const rows = document.querySelectorAll('#tableBody tr');
   if (rows.length === 0) return;
@@ -123,7 +121,7 @@ function saveAll() {
 
     if (!itemName || !qty || !price || !date) return;
 
-    // Save to purchases.json
+    // Save to purchases
     purchases.push({ company: currentCompany, item: itemName, qty, price, margin, date });
 
     // Update stock
@@ -143,7 +141,7 @@ function saveAll() {
   fs.writeFileSync(purchasesPath, JSON.stringify(purchases, null, 2));
   fs.writeFileSync(stockPath, JSON.stringify(stock, null, 2));
 
-  document.getElementById('statusMsg').innerText = "✅ All purchases saved successfully!";
+  document.getElementById('statusMsg').innerText = "✅ All purchases saved!";
   tableBody.innerHTML = '';
   addRow();
 }
